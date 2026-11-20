@@ -1,0 +1,33 @@
+name: AI Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+# 왜: 코멘트 게시에 필요한 최소 권한만 준다.
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: PR diff 수집
+        run: gh pr diff "$PR_NUMBER" > "$RUNNER_TEMP/pr.diff"
+      - name: OpenAI 리뷰 생성
+        # 어디: fork PR 등 Secret이 없으면 호출하지 않고 안내 코멘트만 만든다.
+        run: |
+          if [ -z "$OPENAI_API_KEY" ]; then
+            printf '<!-- ai-review -->\n## AI 리뷰 건너뜀\n\nOPENAI_API_KEY가 없어 리뷰하지 않았습니다.\n' > "$RUNNER_TEMP/review.md"
+          else
+            DIFF_FILE="$RUNNER_TEMP/pr.diff" OUT_FILE="$RUNNER_TEMP/review.md" python3 .github/scripts/ai_review.py
+          fi
+      - name: PR에 코멘트 게시 (기존 AI 리뷰 코멘트는 갱신)
+        run: gh pr comment "$PR_NUMBER" --body-file "$RUNNER_TEMP/review.md" --edit-last --create-if-none

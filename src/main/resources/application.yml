@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: slackclone
+  datasource:
+    # 왜: 로컬은 H2를 PostgreSQL 모드로 써서 CI의 실제 PostgreSQL과 SQL 차이를 줄인다.
+    # 어디: CI는 환경변수로 이 값을 덮어쓴다.
+    url: jdbc:h2:mem:slackclone;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      # 왜: 테이블은 Flyway만 만든다. Hibernate가 스키마를 바꾸지 못하게 검증만 한다.
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health

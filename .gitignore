@@ -1,0 +1,22 @@
+# 빌드 산출물
+build/
+.gradle/
+out/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# 비밀 · 로컬 설정 (git에 올리지 않는다)
+.env
+.env.*
+application-local.yml
+*.key
+*.pem
+
+# OS
+.DS_Store
+
+# Claude Code 로컬 설정
+.claude/settings.local.json
