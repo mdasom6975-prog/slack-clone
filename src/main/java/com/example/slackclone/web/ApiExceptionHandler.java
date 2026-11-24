@@ -1,6 +1,9 @@
 package com.example.slackclone.web;
 
+import com.example.slackclone.service.ChannelNotFoundException;
+import com.example.slackclone.service.DuplicateChannelNameException;
 import com.example.slackclone.service.DuplicateUsernameException;
+import com.example.slackclone.service.NotChannelMemberException;
 import com.example.slackclone.service.InvalidCredentialsException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -21,6 +24,22 @@ public class ApiExceptionHandler {
     @ExceptionHandler(InvalidCredentialsException.class)
     ProblemDetail invalid(InvalidCredentialsException e) {
         return ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, e.getMessage());
+    }
+
+    // 채널: 이름 중복 409, 없는 채널 404, 미참여 접근 403.
+    @ExceptionHandler(DuplicateChannelNameException.class)
+    ProblemDetail duplicateChannel(DuplicateChannelNameException e) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, e.getMessage());
+    }
+
+    @ExceptionHandler(ChannelNotFoundException.class)
+    ProblemDetail channelNotFound(ChannelNotFoundException e) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
+    }
+
+    @ExceptionHandler(NotChannelMemberException.class)
+    ProblemDetail notMember(NotChannelMemberException e) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, e.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
