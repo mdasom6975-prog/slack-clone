@@ -20,3 +20,10 @@ management:
     web:
       exposure:
         include: health
+
+app:
+  jwt:
+    # 왜: 서명 키는 비밀이라 파일에 쓰지 않고 환경변수로만 받는다. (32바이트 이상)
+    # 어디: 만료 시간만 설정 파일에 둔다.
+    secret: ${JWT_SECRET}
+    expires-minutes: 60
