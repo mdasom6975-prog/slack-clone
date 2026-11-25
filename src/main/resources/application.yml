@@ -27,3 +27,7 @@ app:
     # 어디: 만료 시간만 설정 파일에 둔다.
     secret: ${JWT_SECRET}
     expires-minutes: 60
+  chat:
+    # 왜: 길이 한도 같은 바꿀 수 있는 값은 설정 파일에만 둔다.
+    # 어디: 한 메시지의 최대 글자 수.
+    max-length: 2000
